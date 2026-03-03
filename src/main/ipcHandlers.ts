@@ -31,7 +31,7 @@ export function registerIpcHandlers(
   // オーディオデバイス一覧取得ハンドラー
   ipcMain.handle(IPC_EVENTS.AUDIO_DEVICES_GET, async (): Promise<unknown[]> => {
     // レンダラー側の navigator.mediaDevices.enumerateDevices() で取得するため、
-    // メインプロセスでは空配列を返す（T007で必要に応じて拡張）
+    // メインプロセスでは空配列を返す
     return [];
   });
 

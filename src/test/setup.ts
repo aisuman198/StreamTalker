@@ -62,5 +62,11 @@ if (typeof HTMLCanvasElement !== 'undefined') {
   HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
     clearRect: vi.fn(),
     drawImage: vi.fn(),
+    fillRect: vi.fn(),
+    fillStyle: '',
+    font: '',
+    textAlign: '',
+    textBaseline: '',
+    fillText: vi.fn(),
   }) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 }

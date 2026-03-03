@@ -6,6 +6,7 @@
  */
 
 import type { AppConfig } from '../shared/types';
+import { DEFAULT_CONFIG } from '../shared/constants';
 
 export type SettingsValue = Pick<
   AppConfig,
@@ -41,7 +42,7 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     min: 0.01,
     max: 0.5,
     step: 0.01,
-    defaultValue: 0.15,
+    defaultValue: DEFAULT_CONFIG.threshold,
     format: (v) => v.toFixed(2),
   },
   {
@@ -50,7 +51,7 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     min: 0,
     max: 1,
     step: 0.05,
-    defaultValue: 0.3,
+    defaultValue: DEFAULT_CONFIG.smoothingTimeConstant,
     format: (v) => v.toFixed(2),
   },
   {
@@ -59,7 +60,7 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     min: 50,
     max: 500,
     step: 25,
-    defaultValue: 150,
+    defaultValue: DEFAULT_CONFIG.lipSyncCycleMs,
     format: (v) => `${v} ms`,
   },
   {
@@ -68,7 +69,7 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     min: 1000,
     max: 10000,
     step: 500,
-    defaultValue: 4000,
+    defaultValue: DEFAULT_CONFIG.blinkIntervalBase,
     format: (v) => `${v} ms`,
   },
 ];
@@ -91,10 +92,10 @@ export class SettingsPanel {
 
     // 初期値（デフォルト値をベースに上書き）
     this.values = {
-      threshold: options.initialValues?.threshold ?? 0.15,
-      smoothingTimeConstant: options.initialValues?.smoothingTimeConstant ?? 0.3,
-      lipSyncCycleMs: options.initialValues?.lipSyncCycleMs ?? 150,
-      blinkIntervalBase: options.initialValues?.blinkIntervalBase ?? 4000,
+      threshold: options.initialValues?.threshold ?? DEFAULT_CONFIG.threshold,
+      smoothingTimeConstant: options.initialValues?.smoothingTimeConstant ?? DEFAULT_CONFIG.smoothingTimeConstant,
+      lipSyncCycleMs: options.initialValues?.lipSyncCycleMs ?? DEFAULT_CONFIG.lipSyncCycleMs,
+      blinkIntervalBase: options.initialValues?.blinkIntervalBase ?? DEFAULT_CONFIG.blinkIntervalBase,
     };
 
     this.container = document.createElement('div');
@@ -105,7 +106,7 @@ export class SettingsPanel {
     title.className = 'section-title';
     this.container.appendChild(title);
 
-    this.buildColorPicker(options.initialBackgroundColor ?? '#00FF00');
+    this.buildColorPicker(options.initialBackgroundColor ?? DEFAULT_CONFIG.backgroundColor);
 
     for (const config of SLIDER_CONFIGS) {
       this.buildSlider(config);
