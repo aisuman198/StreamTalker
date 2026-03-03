@@ -1,4 +1,5 @@
 import type { FaceState, ImageConfig, MouthState, EyeState } from '../shared/types';
+import { DEFAULT_CONFIG } from '../shared/constants';
 
 export interface DebugInfo {
   volume: number;
@@ -16,7 +17,7 @@ export class FaceRenderer {
   private currentState: FaceState | null = null;
   private imageConfig: ImageConfig | null = null;
   private animFrameId: number | null = null;
-  private backgroundColor: string = '#00FF00';
+  private backgroundColor: string = DEFAULT_CONFIG.backgroundColor;
   private debugInfo: DebugInfo | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -50,7 +51,7 @@ export class FaceRenderer {
   // アニメーションループ開始（外部から呼ぶ）
   startLoop(): void {
     const loop = () => {
-      // FaceStateは外部から updateState() で更新されるため、ここでは単純に描画を維持
+      this.draw();
       this.animFrameId = requestAnimationFrame(loop);
     };
     this.animFrameId = requestAnimationFrame(loop);
@@ -65,9 +66,7 @@ export class FaceRenderer {
 
   // エラーメッセージをCanvasに表示（OBS上でも確認できるように）
   showError(message: string): void {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.clearCanvas();
     this.ctx.fillStyle = '#FF0000';
     this.ctx.font = '14px sans-serif';
     this.ctx.textAlign = 'center';
@@ -87,22 +86,23 @@ export class FaceRenderer {
     this.draw();
   }
 
+  private clearCanvas(): void {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = this.backgroundColor;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   private draw(): void {
     if (!this.currentState || !this.imageConfig) {
       // 設定未完了でもデバッグオーバーレイは表示する
       if (this.debugInfo) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = this.backgroundColor;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clearCanvas();
         this.renderDebugOverlay(this.debugInfo);
       }
       return;
     }
 
-    // 透過クリア → 背景色で塗りつぶし
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.clearCanvas();
 
     // フォールバックロジックで画像URLを解決
     const url = this.resolveImageUrl(this.currentState.mouth, this.currentState.eye);
@@ -157,7 +157,7 @@ export class FaceRenderer {
 
   private resolveImageUrl(mouth: MouthState, eye: EyeState): string | null {
     if (!this.imageConfig) return null;
-    const config = this.imageConfig as unknown as Record<string, string | undefined>;
+    const config = this.imageConfig as Record<string, string | undefined>;
 
     const raw =
       config[`${mouth}_${eye}`] ||

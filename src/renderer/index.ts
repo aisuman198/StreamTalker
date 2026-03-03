@@ -31,7 +31,7 @@ async function applyRendererConfig(renderer: FaceRenderer, newConfig: AppConfig)
       console.warn('[StreamTalker] 画像の再プリロードに失敗しました。', err);
     }
   }
-  renderer.setBackgroundColor(newConfig.backgroundColor ?? '#00FF00');
+  renderer.setBackgroundColor(newConfig.backgroundColor ?? DEFAULT_CONFIG.backgroundColor);
 }
 
 async function main(): Promise<void> {
@@ -57,14 +57,9 @@ async function main(): Promise<void> {
   }
 
   // 5. 画像設定・背景色をレンダラーに適用
-  if (config?.images) {
-    try {
-      await renderer.setImageConfig(config.images);
-    } catch (err) {
-      console.warn('[StreamTalker] 画像のプリロードに失敗しました。', err);
-    }
+  if (config) {
+    await applyRendererConfig(renderer, config);
   }
-  renderer.setBackgroundColor(config?.backgroundColor ?? '#00FF00');
 
   // 6. アニメーションループを開始
   renderer.startLoop();
@@ -111,11 +106,16 @@ async function main(): Promise<void> {
       renderer.updateState(stateManager.faceState);
     });
     resizeObserver.observe(document.body);
+    window.addEventListener('beforeunload', () => {
+      renderer.stopLoop();
+      resizeObserver.disconnect();
+      stateManager.stop().catch(() => {});
+    });
 
     // デバッグオーバーレイ（?debug=1）
     if (new URLSearchParams(window.location.search).has('debug')) {
       const threshold = config?.threshold ?? DEFAULT_CONFIG.threshold;
-      setInterval(() => {
+      const debugTimer = setInterval(() => {
         renderer.setDebugInfo({
           volume: stateManager.volume,
           threshold,
@@ -125,6 +125,7 @@ async function main(): Promise<void> {
           speaking: stateManager.speaking,
         });
       }, 100);
+      window.addEventListener('beforeunload', () => clearInterval(debugTimer));
     }
 
   } else {
@@ -154,6 +155,10 @@ async function main(): Promise<void> {
       resizeCanvas(canvas);
     });
     resizeObserver.observe(document.body);
+    window.addEventListener('beforeunload', () => {
+      eventSource.close();
+      resizeObserver.disconnect();
+    });
   }
 }
 
