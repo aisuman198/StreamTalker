@@ -1,0 +1,41 @@
+{
+  "name": "stream-talker",
+  "version": "0.1.0",
+  "description": "リップシンクアニメーションをOBSに出力するElectronアプリ",
+  "type": "module",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && NODE_ENV=development electron .\"",
+    "build": "tsc -p tsconfig.main.json && node_modules/.bin/esbuild src/main/preload.ts --bundle --platform=node --format=cjs --external:electron --outfile=dist/main/preload.cjs && vite build",
+    "start": "electron .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": ["electron", "obs", "lipsync", "streaming", "canvas"],
+  "author": "aisuman198",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aisuman198/StreamTalker.git"
+  },
+  "dependencies": {
+    "electron": "^40.6.1",
+    "electron-store": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.35",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "@vitest/coverage-v8": "^4.0.18",
+    "concurrently": "^8.2.2",
+    "electron-builder": "^26.8.1",
+    "eslint": "^8.57.1",
+    "happy-dom": "^20.7.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
+    "wait-on": "^7.2.0"
+  }
+}

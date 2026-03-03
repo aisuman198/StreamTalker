@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' file: blob:; style-src 'unsafe-inline'; script-src 'self'" />
+  <title>StreamTalker - 設定</title>
+  <style>
+    /* ===== リセット・基本 ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background-color: #1e1e2e;
+      color: #cdd6f4;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ===== ヘッダー ===== */
+    header {
+      background-color: #313244;
+      padding: 16px 24px;
+      border-bottom: 1px solid #45475a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #cba6f7;
+    }
+
+    header .subtitle {
+      font-size: 12px;
+      color: #a6adc8;
+    }
+
+    /* ===== メインコンテンツ ===== */
+    main {
+      padding: 24px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ===== フォームコンテナ ===== */
+    #form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ===== セクションタイトル ===== */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #89b4fa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #313244;
+    }
+
+    /* ===== フォームグループ ===== */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      color: #bac2de;
+    }
+
+    /* ===== セレクトボックス ===== */
+    .form-select {
+      background-color: #313244;
+      color: #cdd6f4;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a6adc8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .form-select:focus {
+      outline: 2px solid #cba6f7;
+      outline-offset: 2px;
+      border-color: transparent;
+    }
+
+    /* ===== 画像ピッカー ===== */
+    .image-picker {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .image-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
+      background-color: #1e1e2e;
+      border: 1px solid #313244;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+
+    .image-field:hover {
+      border-color: #45475a;
+    }
+
+    .image-field.required {
+      border-left: 3px solid #cba6f7;
+    }
+
+    .file-input {
+      font-size: 13px;
+      color: #cdd6f4;
+      background-color: #313244;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      padding: 6px 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .file-input::file-selector-button {
+      background-color: #45475a;
+      color: #cdd6f4;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 10px;
+      margin-right: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .file-input::file-selector-button:hover {
+      background-color: #585b70;
+    }
+
+    .image-preview {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 4px;
+      border: 1px solid #45475a;
+      background-color: #313244;
+      display: none;
+    }
+
+    /* ===== 設定パネル ===== */
+    .settings-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #a6e3a1;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #313244;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #cba6f7;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      background: #d0b4ff;
+    }
+
+    .range-slider:focus {
+      outline: 2px solid #cba6f7;
+      outline-offset: 3px;
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #6c7086;
+    }
+
+    /* ===== フッター（保存ボタン） ===== */
+    footer {
+      position: sticky;
+      bottom: 0;
+      background-color: #1e1e2e;
+      border-top: 1px solid #313244;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #save-button {
+      background-color: #cba6f7;
+      color: #1e1e2e;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s, opacity 0.15s;
+      min-width: 120px;
+    }
+
+    #save-button:hover {
+      background-color: #d0b4ff;
+    }
+
+    #save-button:active {
+      background-color: #b895f0;
+    }
+
+    #save-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== ステータスメッセージ ===== */
+    .status-message {
+      display: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    .status-success {
+      background-color: rgba(166, 227, 161, 0.15);
+      color: #a6e3a1;
+      border: 1px solid rgba(166, 227, 161, 0.3);
+    }
+
+    .status-error {
+      background-color: rgba(243, 139, 168, 0.15);
+      color: #f38ba8;
+      border: 1px solid rgba(243, 139, 168, 0.3);
+    }
+
+    /* ===== スクロール ===== */
+    main {
+      overflow-y: auto;
+      padding-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>StreamTalker</h1>
+      <p class="subtitle">設定パネル</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- コンポーネントが JS で動的に追加される -->
+    <div id="form-container"></div>
+  </main>
+
+  <footer>
+    <button id="save-button" type="button">保存</button>
+    <span id="status-message" class="status-message"></span>
+  </footer>
+
+  <script type="module" src="./index.ts"></script>
+</body>
+</html>
