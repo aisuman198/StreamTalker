@@ -5,4 +5,4 @@ out/
 *.js.map
 coverage/
 assets/
-.claude/
+.claude/settings.local.json
