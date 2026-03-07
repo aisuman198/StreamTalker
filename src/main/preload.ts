@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
 import { IPC_EVENTS } from '../shared/ipcEvents.js';
 
 // 許可するIPCチャンネルのホワイトリスト
@@ -21,4 +21,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.send(channel, data);
     }
   },
+  /** ローカルファイルの絶対パスを取得する（Electron 35+ で file.path の代替） */
+  getPathForFile: (file: File): string => webUtils.getPathForFile(file),
 });

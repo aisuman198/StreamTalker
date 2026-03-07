@@ -6,6 +6,8 @@ interface ElectronAPI {
   invoke: (channel: string, data?: unknown) => Promise<unknown>;
   on: (channel: string, callback: (...args: unknown[]) => void) => void;
   send: (channel: string, data?: unknown) => void;
+  /** ローカルファイルの絶対パスを取得する（Electron 35+ で file.path の代替） */
+  getPathForFile: (file: File) => string;
 }
 
 declare global {

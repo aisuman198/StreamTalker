@@ -8,11 +8,6 @@
 
 import type { ImageConfig } from '../shared/types';
 
-/** Electron 拡張: File オブジェクトに path プロパティが存在する */
-interface ElectronFile extends File {
-  path: string;
-}
-
 export interface ImagePickerPattern {
   /** ImageConfig のキー名 */
   key: keyof ImageConfig;
@@ -134,11 +129,11 @@ export class ImagePicker {
     }
 
     input.addEventListener('change', () => {
-      const file = input.files?.[0] as ElectronFile | undefined;
+      const file = input.files?.[0];
       if (!file) return;
 
-      // Electron 環境ではローカルパスが取得できる
-      const localPath = file.path || '';
+      // Electron 35+ では file.path が削除されたため webUtils.getPathForFile() を使用
+      const localPath = window.electronAPI?.getPathForFile(file) ?? '';
       fieldEntry.pathValue = localPath;
 
       // file:// プロトコルでプレビュー表示
