@@ -9,6 +9,9 @@ export const IPC_EVENTS = {
 
   // 顔の状態（Electron renderer → main → /api/state 経由で OBS へ）
   FACE_STATE_UPDATED: 'face:state:updated',
+
+  // プレビューウィンドウ表示切り替え
+  PREVIEW_TOGGLE: 'preview:toggle',
 } as const;
 
 export type IpcEventKey = keyof typeof IPC_EVENTS;

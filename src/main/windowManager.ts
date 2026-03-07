@@ -66,4 +66,14 @@ export class WindowManager {
   getPreviewWindow(): BrowserWindow | null {
     return this.previewWindow;
   }
+
+  togglePreviewWindow(): void {
+    const win = this.getPreviewWindow();
+    if (!win) return;
+    if (win.isVisible()) {
+      win.hide();
+    } else {
+      win.show();
+    }
+  }
 }
