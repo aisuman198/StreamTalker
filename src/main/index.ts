@@ -1,11 +1,12 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { WindowManager } from './windowManager.js';
 import { ConfigStore } from './configStore.js';
 import { registerIpcHandlers } from './ipcHandlers.js';
 import { startPreviewServer } from './server.js';
+import { IPC_EVENTS } from '../shared/ipcEvents.js';
 import type { FaceState } from '../shared/types.js';
 
 let windowManager: WindowManager;
@@ -24,6 +25,11 @@ app.whenReady().then(async () => {
 
   windowManager = new WindowManager();
   windowManager.createWindows();
+
+  // プレビューウィンドウ表示切り替えハンドラー
+  ipcMain.handle(IPC_EVENTS.PREVIEW_TOGGLE, () => {
+    windowManager.togglePreviewWindow();
+  });
 
   // HTTPサーバーを起動（開発・本番両モード。/api/image で画像を配信し file:// CORS 問題を回避）
   const distRendererDir = path.join(__dirname, '../renderer');

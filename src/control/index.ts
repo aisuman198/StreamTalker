@@ -127,6 +127,17 @@ async function main(): Promise<void> {
     });
   }
 
+  // プレビュートグルボタンのイベントリスナー
+  let previewVisible = true;
+  const previewToggleButton = document.getElementById('preview-toggle-button') as HTMLButtonElement | null;
+  if (previewToggleButton) {
+    previewToggleButton.addEventListener('click', () => {
+      void ipcClient.togglePreview();
+      previewVisible = !previewVisible;
+      previewToggleButton.textContent = previewVisible ? 'プレビューを隠す' : 'プレビューを表示';
+    });
+  }
+
   // メインプロセスから設定更新通知を受け取ったとき（別ウィンドウ等から変更された場合）
   ipcClient.onConfigUpdated((updatedConfig: AppConfig) => {
     currentConfig = { ...updatedConfig };

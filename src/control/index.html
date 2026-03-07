@@ -271,6 +271,30 @@
       cursor: not-allowed;
     }
 
+    /* ===== セカンダリボタン ===== */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s, opacity 0.15s;
+    }
+
+    .btn-secondary {
+      background-color: #45475a;
+      color: #cdd6f4;
+    }
+
+    .btn-secondary:hover {
+      background-color: #585b70;
+    }
+
+    .btn-secondary:active {
+      background-color: #6c7086;
+    }
+
     /* ===== ステータスメッセージ ===== */
     .status-message {
       display: none;
@@ -313,6 +337,7 @@
   </main>
 
   <footer>
+    <button id="preview-toggle-button" type="button" class="btn btn-secondary">プレビューを隠す</button>
     <button id="save-button" type="button">保存</button>
     <span id="status-message" class="status-message"></span>
   </footer>

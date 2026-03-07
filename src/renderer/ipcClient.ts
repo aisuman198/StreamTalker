@@ -85,4 +85,12 @@ export const ipcClient = {
       }
     }, 3000);
   },
+
+  togglePreview: (): Promise<void> => {
+    if (hasElectronAPI()) {
+      return window.electronAPI.invoke(IPC_EVENTS.PREVIEW_TOGGLE) as Promise<void>;
+    }
+    // OBS BrowserSource ではプレビューウィンドウ操作不可
+    return Promise.resolve();
+  },
 };
