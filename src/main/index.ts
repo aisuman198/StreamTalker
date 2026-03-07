@@ -25,17 +25,15 @@ app.whenReady().then(async () => {
   windowManager = new WindowManager();
   windowManager.createWindows();
 
-  // 本番時のみHTTPサーバーを起動（開発時はVite dev serverを使う）
-  if (process.env.NODE_ENV !== 'development') {
-    const distRendererDir = path.join(__dirname, '../renderer');
-    const srv = startPreviewServer(
-      distRendererDir,
-      'src/renderer/index.html',
-      () => configStore.getAll(),
-      () => currentFaceState,
-    );
-    pushFaceState = (state) => srv.pushState(state);
-  }
+  // HTTPサーバーを起動（開発・本番両モード。/api/image で画像を配信し file:// CORS 問題を回避）
+  const distRendererDir = path.join(__dirname, '../renderer');
+  const srv = startPreviewServer(
+    distRendererDir,
+    'src/renderer/index.html',
+    () => configStore.getAll(),
+    () => currentFaceState,
+  );
+  pushFaceState = (state) => srv.pushState(state);
 });
 
 app.on('window-all-closed', () => {

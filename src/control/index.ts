@@ -55,7 +55,7 @@ function mountComponents(initialConfig: AppConfig): void {
   imagePicker = new ImagePicker({
     initialImages: initialConfig.images,
     onChange: (images) => {
-      currentConfig.images = images as ImageConfig;
+      currentConfig.images = { ...currentConfig.images, ...images } as ImageConfig;
     },
   });
   formContainer.appendChild(imagePicker.getElement());

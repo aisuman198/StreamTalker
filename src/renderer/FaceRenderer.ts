@@ -1,5 +1,5 @@
 import type { FaceState, ImageConfig, MouthState, EyeState } from '../shared/types';
-import { DEFAULT_CONFIG } from '../shared/constants';
+import { DEFAULT_CONFIG, PREVIEW_SERVER_PORT } from '../shared/constants';
 
 export interface DebugInfo {
   volume: number;
@@ -30,9 +30,9 @@ export class FaceRenderer {
   // 画像設定を更新（設定変更時に呼ぶ）
   async setImageConfig(config: ImageConfig): Promise<void> {
     this.imageConfig = config;
-    // 設定された画像をプリロード
+    // 設定された画像をプリロード（一部失敗しても他の画像は継続してロード）
     const urls = Object.values(config).filter(Boolean) as string[];
-    await Promise.all(urls.map(url => this.loadImage(url)));
+    await Promise.allSettled(urls.map(url => this.loadImage(url)));
   }
 
   // FaceStateを更新（変化があった時のみ再描画）
@@ -168,9 +168,24 @@ export class FaceRenderer {
     return raw ? this.toSrc(raw) : null;
   }
 
-  /** 絶対ファイルパスを file:// URL に変換する（HTTP URL はそのまま） */
+  /**
+   * 絶対ファイルパスをプレビューサーバーの画像 API URL に変換する。
+   * HTTP/data URL はそのまま返す。
+   * file:// を直接使うと Electron の HTTP コンテキスト（開発時）でブロックされるため、
+   * 常に http://localhost:{PREVIEW_SERVER_PORT}/api/image 経由でロードする。
+   */
   private toSrc(path: string): string {
-    if (path.startsWith('/')) return `file://${path}`;
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
+    if (path.startsWith('/')) {
+      // UTF-8 バイト列を base64 に変換（Node.js の Buffer.from(path).toString('base64') と等価）
+      const bytes = new TextEncoder().encode(path);
+      let binStr = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binStr += String.fromCharCode(bytes[i]);
+      }
+      const encoded = encodeURIComponent(btoa(binStr));
+      return `http://localhost:${PREVIEW_SERVER_PORT}/api/image?src=${encoded}`;
+    }
     return path;
   }
 
