@@ -46,10 +46,6 @@ describe('WindowManager', () => {
     manager = new WindowManager();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('createWindows()', () => {
     it('createWindows() 後に getControlWindow() と getPreviewWindow() が非 null を返すこと', () => {
       manager.createWindows();

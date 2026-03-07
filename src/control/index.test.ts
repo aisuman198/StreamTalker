@@ -97,41 +97,25 @@ describe('プレビュートグルボタン', () => {
       </footer>
     `;
 
-    // index.ts の main() をインポートして実行
-    // DOMContentLoaded イベント経由では非同期タイミング制御が困難なため、
-    // モジュールを直接インポートせず DOM セットアップ後にハンドラーを手動で設定する
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('トグルボタンクリックで ipcClient.togglePreview() が呼ばれること', async () => {
-    // ボタンとフラグを直接セットアップ（index.ts の main() のロジックを再現）
+    // index.ts の main() のロジックを再現してハンドラーをセットアップ
+    // DOMContentLoaded イベント経由では非同期タイミング制御が困難なため手動設定
     let previewVisible = true;
     const previewToggleButton = document.getElementById('preview-toggle-button') as HTMLButtonElement;
-
     previewToggleButton.addEventListener('click', () => {
       void mockTogglePreview();
       previewVisible = !previewVisible;
       previewToggleButton.textContent = previewVisible ? 'プレビューを隠す' : 'プレビューを表示';
     });
+  });
 
-    previewToggleButton.click();
+  it('トグルボタンクリックで ipcClient.togglePreview() が呼ばれること', async () => {
+    document.getElementById('preview-toggle-button')!.click();
     await Promise.resolve();
-
     expect(mockTogglePreview).toHaveBeenCalledTimes(1);
   });
 
   it('2回クリックでラベルが「プレビューを隠す」→「プレビューを表示」→「プレビューを隠す」と変わること', async () => {
-    let previewVisible = true;
     const previewToggleButton = document.getElementById('preview-toggle-button') as HTMLButtonElement;
-
-    previewToggleButton.addEventListener('click', () => {
-      void mockTogglePreview();
-      previewVisible = !previewVisible;
-      previewToggleButton.textContent = previewVisible ? 'プレビューを隠す' : 'プレビューを表示';
-    });
 
     // 初期状態
     expect(previewToggleButton.textContent).toBe('プレビューを隠す');
