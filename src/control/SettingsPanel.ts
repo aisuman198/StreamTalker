@@ -57,9 +57,9 @@ const SLIDER_CONFIGS: SliderConfig[] = [
   {
     key: 'lipSyncCycleMs',
     label: '口パク速度（LipSync Cycle）',
-    min: 50,
+    min: 25,
     max: 500,
-    step: 25,
+    step: 1,
     defaultValue: DEFAULT_CONFIG.lipSyncCycleMs,
     format: (v) => `${v} ms`,
   },
