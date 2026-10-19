@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { FaceRenderer } from './FaceRenderer';
+import { FaceRenderer, swayOffset } from './FaceRenderer';
 import type { ImageConfig, FaceState } from '../shared/types';
 
 // ------------------------------------------------------------------
@@ -332,5 +332,27 @@ describe('FaceRenderer', () => {
         renderer.stopLoop();
       }).not.toThrow();
     });
+  });
+});
+
+describe('swayOffset', () => {
+  it('周期の始点と終点で 0、中間で振幅に達する', () => {
+    expect(swayOffset(0, 6, 3000)).toBeCloseTo(0);
+    expect(swayOffset(1500, 6, 3000)).toBeCloseTo(6);
+    expect(swayOffset(3000, 6, 3000)).toBeCloseTo(0);
+  });
+
+  it('線形ではなくイージングがかかる（端付近の移動量が中間より小さい）', () => {
+    const nearEdge = swayOffset(150, 6, 3000) - swayOffset(0, 6, 3000);
+    const nearMid = swayOffset(750, 6, 3000) - swayOffset(600, 6, 3000);
+    expect(nearEdge).toBeLessThan(nearMid);
+  });
+
+  it('常に 0〜振幅の範囲に収まる', () => {
+    for (let t = 0; t < 6000; t += 37) {
+      const y = swayOffset(t, 6, 3000);
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(y).toBeLessThanOrEqual(6);
+    }
   });
 });

@@ -1,5 +1,15 @@
 import type { FaceState, ImageConfig, MouthState, EyeState } from '../shared/types';
-import { DEFAULT_CONFIG, PREVIEW_SERVER_PORT } from '../shared/constants';
+import { DEFAULT_CONFIG, PREVIEW_SERVER_PORT, SWAY_AMPLITUDE_PX, SWAY_PERIOD_MS } from '../shared/constants';
+
+/**
+ * 時刻 t (ms) における上下揺れのオフセット (px, 下方向が正) を返す。
+ * (1 - cos) / 2 のサイン型イージングで、上端・下端で減速し中間で最速になる。
+ * 下方向のみに動かすことで、画像下端（身体の切れ目）に隙間を作らない。
+ */
+export function swayOffset(t: number, amplitude = SWAY_AMPLITUDE_PX, period = SWAY_PERIOD_MS): number {
+  const phase = (t % period) / period;
+  return amplitude * (1 - Math.cos(2 * Math.PI * phase)) / 2;
+}
 
 export interface DebugInfo {
   volume: number;
@@ -109,7 +119,8 @@ export class FaceRenderer {
     if (url) {
       const img = this.imageCache.get(url);
       if (img?.complete) {
-        this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        const offsetY = swayOffset(performance.now());
+        this.ctx.drawImage(img, 0, offsetY, this.canvas.width, this.canvas.height);
       }
     }
 
