@@ -69,7 +69,7 @@ function mountComponents(initialConfig: AppConfig): void {
       smoothingTimeConstant: initialConfig.smoothingTimeConstant,
       lipSyncCycleMs: initialConfig.lipSyncCycleMs,
       blinkIntervalBase: initialConfig.blinkIntervalBase,
-      swayAmplitude: initialConfig.swayAmplitude,
+      swayAmplitudePercent: initialConfig.swayAmplitudePercent,
       swayPeriodMs: initialConfig.swayPeriodMs,
     },
     initialBackgroundColor: initialConfig.backgroundColor,
@@ -78,7 +78,7 @@ function mountComponents(initialConfig: AppConfig): void {
       currentConfig.smoothingTimeConstant = values.smoothingTimeConstant;
       currentConfig.lipSyncCycleMs = values.lipSyncCycleMs;
       currentConfig.blinkIntervalBase = values.blinkIntervalBase;
-      currentConfig.swayAmplitude = values.swayAmplitude;
+      currentConfig.swayAmplitudePercent = values.swayAmplitudePercent;
       currentConfig.swayPeriodMs = values.swayPeriodMs;
     },
     onBackgroundColorChange: (color) => {
@@ -161,7 +161,7 @@ async function main(): Promise<void> {
         smoothingTimeConstant: updatedConfig.smoothingTimeConstant,
         lipSyncCycleMs: updatedConfig.lipSyncCycleMs,
         blinkIntervalBase: updatedConfig.blinkIntervalBase,
-        swayAmplitude: updatedConfig.swayAmplitude,
+        swayAmplitudePercent: updatedConfig.swayAmplitudePercent,
         swayPeriodMs: updatedConfig.swayPeriodMs,
         backgroundColor: updatedConfig.backgroundColor,
       });

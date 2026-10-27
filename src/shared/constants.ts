@@ -10,7 +10,7 @@ export const DEFAULT_CONFIG: Omit<AppConfig, 'images'> = {
   blinkIntervalBase: 4000,
   blinkIntervalVariance: 2000,
   blinkTransitionDuration: 80,
-  swayAmplitude: 9,
+  swayAmplitudePercent: 1.5,
   swayPeriodMs: 3000,
 };
 

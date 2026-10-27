@@ -189,19 +189,20 @@ describe('FaceRenderer', () => {
   // 上下揺れ setSway() のテスト
   // ----------------------------------------------------------------
   describe('setSway()', () => {
-    it('設定した振れ幅・周期で drawImage の Y 座標がずれること', async () => {
+    it('振れ幅は Canvas の高さに対する % で drawImage の Y 座標がずれること', async () => {
       const { canvas, renderer } = makeRenderer();
       await renderer.setImageConfig(makeConfig());
       await new Promise(resolve => setTimeout(resolve, 10));
       const ctx = canvas.getContext('2d') as unknown as { drawImage: ReturnType<typeof vi.fn> };
 
       // 周期 2000ms の中間（1000ms）で振れ幅いっぱいまで下がる
+      // Canvas の高さ 480px の 5% = 24px
       vi.spyOn(performance, 'now').mockReturnValue(1000);
-      renderer.setSway(20, 2000);
+      renderer.setSway(5, 2000);
       renderer.updateState({ mouth: 'closed', eye: 'open' });
 
       const lastCall = ctx.drawImage.mock.calls.at(-1)!;
-      expect(lastCall[2]).toBeCloseTo(20);
+      expect(lastCall[2]).toBeCloseTo(24);
       vi.mocked(performance.now).mockRestore();
     });
   });

@@ -10,7 +10,7 @@ import { DEFAULT_CONFIG } from '../shared/constants';
 
 export type SettingsValue = Pick<
   AppConfig,
-  'threshold' | 'smoothingTimeConstant' | 'lipSyncCycleMs' | 'blinkIntervalBase' | 'swayAmplitude' | 'swayPeriodMs'
+  'threshold' | 'smoothingTimeConstant' | 'lipSyncCycleMs' | 'blinkIntervalBase' | 'swayAmplitudePercent' | 'swayPeriodMs'
 >;
 
 export interface SettingsPanelOptions {
@@ -73,13 +73,13 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     format: (v) => `${v} ms`,
   },
   {
-    key: 'swayAmplitude',
-    label: '上下揺れの振れ幅',
+    key: 'swayAmplitudePercent',
+    label: '上下揺れの振れ幅（画像の高さに対する割合）',
     min: 0,
-    max: 30,
-    step: 1,
-    defaultValue: DEFAULT_CONFIG.swayAmplitude,
-    format: (v) => `${v} px`,
+    max: 10,
+    step: 0.1,
+    defaultValue: DEFAULT_CONFIG.swayAmplitudePercent,
+    format: (v) => `${v.toFixed(1)} %`,
   },
   {
     key: 'swayPeriodMs',
@@ -114,7 +114,7 @@ export class SettingsPanel {
       smoothingTimeConstant: options.initialValues?.smoothingTimeConstant ?? DEFAULT_CONFIG.smoothingTimeConstant,
       lipSyncCycleMs: options.initialValues?.lipSyncCycleMs ?? DEFAULT_CONFIG.lipSyncCycleMs,
       blinkIntervalBase: options.initialValues?.blinkIntervalBase ?? DEFAULT_CONFIG.blinkIntervalBase,
-      swayAmplitude: options.initialValues?.swayAmplitude ?? DEFAULT_CONFIG.swayAmplitude,
+      swayAmplitudePercent: options.initialValues?.swayAmplitudePercent ?? DEFAULT_CONFIG.swayAmplitudePercent,
       swayPeriodMs: options.initialValues?.swayPeriodMs ?? DEFAULT_CONFIG.swayPeriodMs,
     };
 

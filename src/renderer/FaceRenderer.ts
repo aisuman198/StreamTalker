@@ -6,11 +6,7 @@ import { DEFAULT_CONFIG, PREVIEW_SERVER_PORT } from '../shared/constants';
  * (1 - cos) / 2 のサイン型イージングで、上端・下端で減速し中間で最速になる。
  * 下方向のみに動かすことで、画像下端（身体の切れ目）に隙間を作らない。
  */
-export function swayOffset(
-  t: number,
-  amplitude: number = DEFAULT_CONFIG.swayAmplitude,
-  period: number = DEFAULT_CONFIG.swayPeriodMs,
-): number {
+export function swayOffset(t: number, amplitude: number, period: number): number {
   if (period <= 0) return 0;
   const phase = (t % period) / period;
   return amplitude * (1 - Math.cos(2 * Math.PI * phase)) / 2;
@@ -34,7 +30,7 @@ export class FaceRenderer {
   private animFrameId: number | null = null;
   private backgroundColor: string = DEFAULT_CONFIG.backgroundColor;
   private debugInfo: DebugInfo | null = null;
-  private swayAmplitude: number = DEFAULT_CONFIG.swayAmplitude;
+  private swayAmplitudePercent: number = DEFAULT_CONFIG.swayAmplitudePercent;
   private swayPeriodMs: number = DEFAULT_CONFIG.swayPeriodMs;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -103,9 +99,9 @@ export class FaceRenderer {
     this.draw();
   }
 
-  // 上下揺れの振れ幅 (px) と 1 往復の時間 (ms) を設定
-  setSway(amplitude: number, periodMs: number): void {
-    this.swayAmplitude = amplitude;
+  // 上下揺れの振れ幅（Canvas の高さに対する %）と 1 往復の時間 (ms) を設定
+  setSway(amplitudePercent: number, periodMs: number): void {
+    this.swayAmplitudePercent = amplitudePercent;
     this.swayPeriodMs = periodMs;
   }
 
@@ -132,7 +128,9 @@ export class FaceRenderer {
     if (url) {
       const img = this.imageCache.get(url);
       if (img?.complete) {
-        const offsetY = swayOffset(performance.now(), this.swayAmplitude, this.swayPeriodMs);
+        // 振れ幅は Canvas の高さに対する割合で指定し、OBS とプレビューで見た目を揃える
+        const amplitudePx = this.canvas.height * this.swayAmplitudePercent / 100;
+        const offsetY = swayOffset(performance.now(), amplitudePx, this.swayPeriodMs);
         this.ctx.drawImage(img, 0, offsetY, this.canvas.width, this.canvas.height);
       }
     }
