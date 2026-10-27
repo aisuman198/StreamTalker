@@ -60,13 +60,15 @@ function mountComponents(initialConfig: AppConfig): void {
   });
   formContainer.appendChild(imagePicker.getElement());
 
-  // 3. 感度・瞬き設定パネル
+  // 3. 感度・瞬き・揺れ設定パネル
   settingsPanel = new SettingsPanel({
     initialValues: {
       threshold: initialConfig.threshold,
       smoothingTimeConstant: initialConfig.smoothingTimeConstant,
       lipSyncCycleMs: initialConfig.lipSyncCycleMs,
       blinkIntervalBase: initialConfig.blinkIntervalBase,
+      swayAmplitude: initialConfig.swayAmplitude,
+      swayPeriodMs: initialConfig.swayPeriodMs,
     },
     initialBackgroundColor: initialConfig.backgroundColor,
     onChange: (values) => {
@@ -74,6 +76,8 @@ function mountComponents(initialConfig: AppConfig): void {
       currentConfig.smoothingTimeConstant = values.smoothingTimeConstant;
       currentConfig.lipSyncCycleMs = values.lipSyncCycleMs;
       currentConfig.blinkIntervalBase = values.blinkIntervalBase;
+      currentConfig.swayAmplitude = values.swayAmplitude;
+      currentConfig.swayPeriodMs = values.swayPeriodMs;
     },
     onBackgroundColorChange: (color) => {
       currentConfig.backgroundColor = color;
@@ -154,6 +158,8 @@ async function main(): Promise<void> {
         smoothingTimeConstant: updatedConfig.smoothingTimeConstant,
         lipSyncCycleMs: updatedConfig.lipSyncCycleMs,
         blinkIntervalBase: updatedConfig.blinkIntervalBase,
+        swayAmplitude: updatedConfig.swayAmplitude,
+        swayPeriodMs: updatedConfig.swayPeriodMs,
         backgroundColor: updatedConfig.backgroundColor,
       });
     }

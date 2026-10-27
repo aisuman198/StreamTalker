@@ -186,6 +186,27 @@ describe('FaceRenderer', () => {
   });
 
   // ----------------------------------------------------------------
+  // 上下揺れ setSway() のテスト
+  // ----------------------------------------------------------------
+  describe('setSway()', () => {
+    it('設定した振れ幅・周期で drawImage の Y 座標がずれること', async () => {
+      const { canvas, renderer } = makeRenderer();
+      await renderer.setImageConfig(makeConfig());
+      await new Promise(resolve => setTimeout(resolve, 10));
+      const ctx = canvas.getContext('2d') as unknown as { drawImage: ReturnType<typeof vi.fn> };
+
+      // 周期 2000ms の中間（1000ms）で振れ幅いっぱいまで下がる
+      vi.spyOn(performance, 'now').mockReturnValue(1000);
+      renderer.setSway(20, 2000);
+      renderer.updateState({ mouth: 'closed', eye: 'open' });
+
+      const lastCall = ctx.drawImage.mock.calls.at(-1)!;
+      expect(lastCall[2]).toBeCloseTo(20);
+      vi.mocked(performance.now).mockRestore();
+    });
+  });
+
+  // ----------------------------------------------------------------
   // 5. setBackgroundColor() のテスト
   // ----------------------------------------------------------------
   describe('setBackgroundColor()', () => {
@@ -346,6 +367,11 @@ describe('swayOffset', () => {
     const nearEdge = swayOffset(150, 6, 3000) - swayOffset(0, 6, 3000);
     const nearMid = swayOffset(750, 6, 3000) - swayOffset(600, 6, 3000);
     expect(nearEdge).toBeLessThan(nearMid);
+  });
+
+  it('振れ幅 0 または周期 0 以下なら揺れない', () => {
+    expect(swayOffset(1500, 0, 3000)).toBe(0);
+    expect(swayOffset(1500, 6, 0)).toBe(0);
   });
 
   it('常に 0〜振幅の範囲に収まる', () => {

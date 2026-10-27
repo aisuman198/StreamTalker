@@ -120,6 +120,8 @@ interface AppConfig {
   blinkIntervalBase: number;       // 瞬き間隔の基準値 (ms)
   blinkIntervalVariance: number;   // 瞬き間隔のばらつき (ms)
   blinkTransitionDuration: number; // 瞬き遷移時間 (ms)
+  swayAmplitude: number;           // 上下揺れの振れ幅 (px)
+  swayPeriodMs: number;            // 上下揺れ 1 往復の時間 (ms)
 }
 ```
 
@@ -136,6 +138,8 @@ export const DEFAULT_CONFIG: Omit<AppConfig, 'images'> = {
   blinkIntervalBase: 4000,
   blinkIntervalVariance: 2000,
   blinkTransitionDuration: 80,
+  swayAmplitude: 9,
+  swayPeriodMs: 3000,
 };
 ```
 

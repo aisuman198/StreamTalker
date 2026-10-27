@@ -1,8 +1,8 @@
 /**
  * SettingsPanel
  *
- * 感度・瞬き設定スライダーコンポーネント。
- * threshold / smoothingTimeConstant / blinkIntervalBase の3つのスライダーを提供する。
+ * 感度・瞬き・揺れ設定スライダーコンポーネント。
+ * 感度・口パク・瞬き・上下揺れのスライダーを提供する。
  */
 
 import type { AppConfig } from '../shared/types';
@@ -10,7 +10,7 @@ import { DEFAULT_CONFIG } from '../shared/constants';
 
 export type SettingsValue = Pick<
   AppConfig,
-  'threshold' | 'smoothingTimeConstant' | 'lipSyncCycleMs' | 'blinkIntervalBase'
+  'threshold' | 'smoothingTimeConstant' | 'lipSyncCycleMs' | 'blinkIntervalBase' | 'swayAmplitude' | 'swayPeriodMs'
 >;
 
 export interface SettingsPanelOptions {
@@ -72,6 +72,24 @@ const SLIDER_CONFIGS: SliderConfig[] = [
     defaultValue: DEFAULT_CONFIG.blinkIntervalBase,
     format: (v) => `${v} ms`,
   },
+  {
+    key: 'swayAmplitude',
+    label: '上下揺れの振れ幅',
+    min: 0,
+    max: 30,
+    step: 1,
+    defaultValue: DEFAULT_CONFIG.swayAmplitude,
+    format: (v) => `${v} px`,
+  },
+  {
+    key: 'swayPeriodMs',
+    label: '上下揺れの周期（小さいほど速い）',
+    min: 500,
+    max: 10000,
+    step: 100,
+    defaultValue: DEFAULT_CONFIG.swayPeriodMs,
+    format: (v) => `${v} ms`,
+  },
 ];
 
 export class SettingsPanel {
@@ -96,13 +114,15 @@ export class SettingsPanel {
       smoothingTimeConstant: options.initialValues?.smoothingTimeConstant ?? DEFAULT_CONFIG.smoothingTimeConstant,
       lipSyncCycleMs: options.initialValues?.lipSyncCycleMs ?? DEFAULT_CONFIG.lipSyncCycleMs,
       blinkIntervalBase: options.initialValues?.blinkIntervalBase ?? DEFAULT_CONFIG.blinkIntervalBase,
+      swayAmplitude: options.initialValues?.swayAmplitude ?? DEFAULT_CONFIG.swayAmplitude,
+      swayPeriodMs: options.initialValues?.swayPeriodMs ?? DEFAULT_CONFIG.swayPeriodMs,
     };
 
     this.container = document.createElement('div');
     this.container.className = 'settings-panel';
 
     const title = document.createElement('h3');
-    title.textContent = '感度・瞬き設定';
+    title.textContent = '感度・瞬き・揺れ設定';
     title.className = 'section-title';
     this.container.appendChild(title);
 
