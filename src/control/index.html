@@ -52,11 +52,50 @@
       margin: 0 auto;
     }
 
+    /* ===== タブ ===== */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      background-color: #313244;
+      padding: 0 24px;
+      border-bottom: 1px solid #45475a;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #a6adc8;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-button:hover {
+      color: #cdd6f4;
+    }
+
+    .tab-button.active {
+      color: #cba6f7;
+      border-bottom-color: #cba6f7;
+    }
+
+    .tab-button:focus-visible {
+      outline: 2px solid #cba6f7;
+      outline-offset: -2px;
+    }
+
     /* ===== フォームコンテナ ===== */
-    #form-container {
+    .tab-panel {
       display: flex;
       flex-direction: column;
       gap: 24px;
+    }
+
+    .tab-panel[hidden] {
+      display: none;
     }
 
     /* ===== セクションタイトル ===== */
@@ -324,9 +363,15 @@
     </div>
   </header>
 
+  <nav class="tab-bar" role="tablist">
+    <button type="button" class="tab-button active" role="tab" data-tab="images" aria-controls="tab-images">画像</button>
+    <button type="button" class="tab-button" role="tab" data-tab="params" aria-controls="tab-params">パラメーター</button>
+  </nav>
+
   <main>
     <!-- コンポーネントが JS で動的に追加される -->
-    <div id="form-container"></div>
+    <section id="tab-images" class="tab-panel" role="tabpanel"></section>
+    <section id="tab-params" class="tab-panel" role="tabpanel" hidden></section>
   </main>
 
   <footer>

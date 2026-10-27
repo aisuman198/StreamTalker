@@ -84,6 +84,7 @@ src/
     SettingsPanel.ts  # スライダー設定 UI
     AudioDeviceSelector.ts  # マイクデバイス選択
     ImagePicker.ts    # 顔画像選択
+    tabs.ts           # 設定画面のタブ切り替え（画像 / パラメーター）
   shared/
     types.ts          # AppConfig, FaceState, ImageConfig, ImageStateKey
     constants.ts      # DEFAULT_CONFIG, FFT_SIZE, PREVIEW_SERVER_PORT
