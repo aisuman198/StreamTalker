@@ -84,6 +84,7 @@ src/
     SettingsPanel.ts  # スライダー設定 UI
     AudioDeviceSelector.ts  # マイクデバイス選択
     ImagePicker.ts    # 顔画像選択
+    tabs.ts           # 設定画面のタブ切り替え（画像 / パラメーター）
   shared/
     types.ts          # AppConfig, FaceState, ImageConfig, ImageStateKey
     constants.ts      # DEFAULT_CONFIG, FFT_SIZE, PREVIEW_SERVER_PORT
@@ -120,6 +121,8 @@ interface AppConfig {
   blinkIntervalBase: number;       // 瞬き間隔の基準値 (ms)
   blinkIntervalVariance: number;   // 瞬き間隔のばらつき (ms)
   blinkTransitionDuration: number; // 瞬き遷移時間 (ms)
+  swayAmplitudePercent: number;    // 上下揺れの振れ幅（Canvas の高さに対する %）
+  swayPeriodMs: number;            // 上下揺れ 1 往復の時間 (ms)
 }
 ```
 
@@ -136,6 +139,8 @@ export const DEFAULT_CONFIG: Omit<AppConfig, 'images'> = {
   blinkIntervalBase: 4000,
   blinkIntervalVariance: 2000,
   blinkTransitionDuration: 80,
+  swayAmplitudePercent: 1.5,
+  swayPeriodMs: 3000,
 };
 ```
 

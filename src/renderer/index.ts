@@ -32,6 +32,10 @@ async function applyRendererConfig(renderer: FaceRenderer, newConfig: AppConfig)
     }
   }
   renderer.setBackgroundColor(newConfig.backgroundColor ?? DEFAULT_CONFIG.backgroundColor);
+  renderer.setSway(
+    newConfig.swayAmplitudePercent ?? DEFAULT_CONFIG.swayAmplitudePercent,
+    newConfig.swayPeriodMs ?? DEFAULT_CONFIG.swayPeriodMs,
+  );
 }
 
 async function main(): Promise<void> {

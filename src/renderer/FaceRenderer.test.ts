@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { FaceRenderer } from './FaceRenderer';
+import { FaceRenderer, swayOffset } from './FaceRenderer';
 import type { ImageConfig, FaceState } from '../shared/types';
 
 // ------------------------------------------------------------------
@@ -186,6 +186,28 @@ describe('FaceRenderer', () => {
   });
 
   // ----------------------------------------------------------------
+  // 上下揺れ setSway() のテスト
+  // ----------------------------------------------------------------
+  describe('setSway()', () => {
+    it('振れ幅は Canvas の高さに対する % で drawImage の Y 座標がずれること', async () => {
+      const { canvas, renderer } = makeRenderer();
+      await renderer.setImageConfig(makeConfig());
+      await new Promise(resolve => setTimeout(resolve, 10));
+      const ctx = canvas.getContext('2d') as unknown as { drawImage: ReturnType<typeof vi.fn> };
+
+      // 周期 2000ms の中間（1000ms）で振れ幅いっぱいまで下がる
+      // Canvas の高さ 480px の 5% = 24px
+      vi.spyOn(performance, 'now').mockReturnValue(1000);
+      renderer.setSway(5, 2000);
+      renderer.updateState({ mouth: 'closed', eye: 'open' });
+
+      const lastCall = ctx.drawImage.mock.calls.at(-1)!;
+      expect(lastCall[2]).toBeCloseTo(24);
+      vi.mocked(performance.now).mockRestore();
+    });
+  });
+
+  // ----------------------------------------------------------------
   // 5. setBackgroundColor() のテスト
   // ----------------------------------------------------------------
   describe('setBackgroundColor()', () => {
@@ -332,5 +354,32 @@ describe('FaceRenderer', () => {
         renderer.stopLoop();
       }).not.toThrow();
     });
+  });
+});
+
+describe('swayOffset', () => {
+  it('周期の始点と終点で 0、中間で振幅に達する', () => {
+    expect(swayOffset(0, 6, 3000)).toBeCloseTo(0);
+    expect(swayOffset(1500, 6, 3000)).toBeCloseTo(6);
+    expect(swayOffset(3000, 6, 3000)).toBeCloseTo(0);
+  });
+
+  it('線形ではなくイージングがかかる（端付近の移動量が中間より小さい）', () => {
+    const nearEdge = swayOffset(150, 6, 3000) - swayOffset(0, 6, 3000);
+    const nearMid = swayOffset(750, 6, 3000) - swayOffset(600, 6, 3000);
+    expect(nearEdge).toBeLessThan(nearMid);
+  });
+
+  it('振れ幅 0 または周期 0 以下なら揺れない', () => {
+    expect(swayOffset(1500, 0, 3000)).toBe(0);
+    expect(swayOffset(1500, 6, 0)).toBe(0);
+  });
+
+  it('常に 0〜振幅の範囲に収まる', () => {
+    for (let t = 0; t < 6000; t += 37) {
+      const y = swayOffset(t, 6, 3000);
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(y).toBeLessThanOrEqual(6);
+    }
   });
 });

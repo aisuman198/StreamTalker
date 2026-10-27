@@ -12,6 +12,7 @@ import { DEFAULT_CONFIG } from '../shared/constants';
 import { AudioDeviceSelector } from './AudioDeviceSelector';
 import { ImagePicker } from './ImagePicker';
 import { SettingsPanel } from './SettingsPanel';
+import { setupTabs } from './tabs';
 
 // ---------- 現在の設定を保持する作業用オブジェクト ----------
 let currentConfig: Partial<AppConfig> = {};
@@ -36,37 +37,40 @@ function showStatus(message: string, isError = false): void {
 
 // ---------- コンポーネントを DOM に追加 ----------
 function mountComponents(initialConfig: AppConfig): void {
-  const formContainer = document.getElementById('form-container');
-  if (!formContainer) {
-    console.error('form-container が見つかりません');
+  const imagesTab = document.getElementById('tab-images');
+  const paramsTab = document.getElementById('tab-params');
+  if (!imagesTab || !paramsTab) {
+    console.error('タブパネル（#tab-images / #tab-params）が見つかりません');
     return;
   }
 
-  // 1. マイクデバイス選択
+  // 1. マイクデバイス選択（パラメータータブ）
   audioDeviceSelector = new AudioDeviceSelector({
     initialDeviceId: initialConfig.audioDeviceId,
     onChange: (deviceId) => {
       currentConfig.audioDeviceId = deviceId;
     },
   });
-  formContainer.appendChild(audioDeviceSelector.getElement());
+  paramsTab.appendChild(audioDeviceSelector.getElement());
 
-  // 2. 画像ピッカー
+  // 2. 画像ピッカー（画像タブ）
   imagePicker = new ImagePicker({
     initialImages: initialConfig.images,
     onChange: (images) => {
       currentConfig.images = { ...currentConfig.images, ...images } as ImageConfig;
     },
   });
-  formContainer.appendChild(imagePicker.getElement());
+  imagesTab.appendChild(imagePicker.getElement());
 
-  // 3. 感度・瞬き設定パネル
+  // 3. 感度・瞬き・揺れ設定パネル（パラメータータブ）
   settingsPanel = new SettingsPanel({
     initialValues: {
       threshold: initialConfig.threshold,
       smoothingTimeConstant: initialConfig.smoothingTimeConstant,
       lipSyncCycleMs: initialConfig.lipSyncCycleMs,
       blinkIntervalBase: initialConfig.blinkIntervalBase,
+      swayAmplitudePercent: initialConfig.swayAmplitudePercent,
+      swayPeriodMs: initialConfig.swayPeriodMs,
     },
     initialBackgroundColor: initialConfig.backgroundColor,
     onChange: (values) => {
@@ -74,12 +78,14 @@ function mountComponents(initialConfig: AppConfig): void {
       currentConfig.smoothingTimeConstant = values.smoothingTimeConstant;
       currentConfig.lipSyncCycleMs = values.lipSyncCycleMs;
       currentConfig.blinkIntervalBase = values.blinkIntervalBase;
+      currentConfig.swayAmplitudePercent = values.swayAmplitudePercent;
+      currentConfig.swayPeriodMs = values.swayPeriodMs;
     },
     onBackgroundColorChange: (color) => {
       currentConfig.backgroundColor = color;
     },
   });
-  formContainer.appendChild(settingsPanel.getElement());
+  paramsTab.appendChild(settingsPanel.getElement());
 }
 
 // ---------- 保存処理 ----------
@@ -118,6 +124,7 @@ async function main(): Promise<void> {
 
   // コンポーネントをマウント
   mountComponents(config);
+  setupTabs();
 
   // 保存ボタンのイベントリスナー
   const saveButton = document.getElementById('save-button');
@@ -154,6 +161,8 @@ async function main(): Promise<void> {
         smoothingTimeConstant: updatedConfig.smoothingTimeConstant,
         lipSyncCycleMs: updatedConfig.lipSyncCycleMs,
         blinkIntervalBase: updatedConfig.blinkIntervalBase,
+        swayAmplitudePercent: updatedConfig.swayAmplitudePercent,
+        swayPeriodMs: updatedConfig.swayPeriodMs,
         backgroundColor: updatedConfig.backgroundColor,
       });
     }
