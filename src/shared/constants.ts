@@ -17,5 +17,5 @@ export const FFT_SIZE = 256;
 export const PREVIEW_SERVER_PORT = 3000;
 
 // アイドル時の上下揺れ（VTuber 風の呼吸モーション）
-export const SWAY_AMPLITUDE_PX = 6;
+export const SWAY_AMPLITUDE_PX = 9;
 export const SWAY_PERIOD_MS = 3000;
