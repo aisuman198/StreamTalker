@@ -22,6 +22,10 @@ export interface SettingsPanelOptions {
   initialBackgroundColor?: string;
   /** 背景色変更時のコールバック */
   onBackgroundColorChange?: (color: string) => void;
+  /** 背景透明の初期値 */
+  initialTransparentBackground?: boolean;
+  /** 背景透明トグル変更時のコールバック */
+  onTransparentBackgroundChange?: (transparent: boolean) => void;
 }
 
 interface SliderConfig {
@@ -98,6 +102,8 @@ export class SettingsPanel {
   private onBackgroundColorChange?: (color: string) => void;
   private values: SettingsValue;
   private colorInput: HTMLInputElement | null = null;
+  private transparentInput: HTMLInputElement | null = null;
+  private onTransparentBackgroundChange?: (transparent: boolean) => void;
   /** key → { slider, valueDisplay } */
   private sliders: Map<
     keyof SettingsValue,
@@ -107,6 +113,7 @@ export class SettingsPanel {
   constructor(options: SettingsPanelOptions) {
     this.onChange = options.onChange;
     this.onBackgroundColorChange = options.onBackgroundColorChange;
+    this.onTransparentBackgroundChange = options.onTransparentBackgroundChange;
 
     // 初期値（デフォルト値をベースに上書き）
     this.values = {
@@ -126,7 +133,9 @@ export class SettingsPanel {
     title.className = 'section-title';
     this.container.appendChild(title);
 
+    this.buildTransparentToggle(options.initialTransparentBackground ?? DEFAULT_CONFIG.transparentBackground);
     this.buildColorPicker(options.initialBackgroundColor ?? DEFAULT_CONFIG.backgroundColor);
+    this.updateColorPickerState();
 
     for (const config of SLIDER_CONFIGS) {
       this.buildSlider(config);
@@ -143,7 +152,7 @@ export class SettingsPanel {
   }
 
   /** 外部から値をセット */
-  setValues(values: Partial<SettingsValue> & { backgroundColor?: string }): void {
+  setValues(values: Partial<SettingsValue> & { backgroundColor?: string; transparentBackground?: boolean }): void {
     for (const config of SLIDER_CONFIGS) {
       const key = config.key;
       const newVal = values[key];
@@ -159,9 +168,47 @@ export class SettingsPanel {
     if (values.backgroundColor !== undefined && this.colorInput) {
       this.colorInput.value = values.backgroundColor;
     }
+    if (values.transparentBackground !== undefined && this.transparentInput) {
+      this.transparentInput.checked = values.transparentBackground;
+      this.updateColorPickerState();
+    }
   }
 
   // ---------- private ----------
+
+  private buildTransparentToggle(initial: boolean): void {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'slider-group';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'toggle-transparent-background';
+    label.className = 'form-label';
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.id = 'toggle-transparent-background';
+    input.checked = initial;
+
+    input.addEventListener('change', () => {
+      this.updateColorPickerState();
+      this.onTransparentBackgroundChange?.(input.checked);
+    });
+
+    this.transparentInput = input;
+
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(' 背景を透明にする（OBS推奨・クロマキー不要）'));
+    wrapper.appendChild(label);
+    this.container.appendChild(wrapper);
+  }
+
+  /** 透明ON時は背景色ピッカーを無効化してグレーアウトする */
+  private updateColorPickerState(): void {
+    if (!this.colorInput || !this.transparentInput) return;
+    const transparent = this.transparentInput.checked;
+    this.colorInput.disabled = transparent;
+    this.colorInput.style.opacity = transparent ? '0.4' : '';
+  }
 
   private buildColorPicker(initialColor: string): void {
     const wrapper = document.createElement('div');

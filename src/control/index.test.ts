@@ -54,6 +54,41 @@ describe('SettingsPanel', () => {
     expect(values.lipSyncCycleMs).toBe(DEFAULT_CONFIG.lipSyncCycleMs);
   });
 
+  it('トグル操作で onTransparentBackgroundChange が呼ばれ、ON時にカラーピッカーが disabled になること', () => {
+    const onTransparentBackgroundChange = vi.fn();
+    const panel = new SettingsPanel({
+      onChange,
+      initialTransparentBackground: false,
+      onTransparentBackgroundChange,
+    });
+    const el = panel.getElement();
+    const toggle = el.querySelector('#toggle-transparent-background') as HTMLInputElement;
+    const color = el.querySelector('#color-background') as HTMLInputElement;
+    expect(color.disabled).toBe(false);
+
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change'));
+    expect(onTransparentBackgroundChange).toHaveBeenLastCalledWith(true);
+    expect(color.disabled).toBe(true);
+
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change'));
+    expect(onTransparentBackgroundChange).toHaveBeenLastCalledWith(false);
+    expect(color.disabled).toBe(false);
+  });
+
+  it('デフォルトは透明ON（カラーピッカー disabled）で、setValues で反映されること', () => {
+    const panel = new SettingsPanel({ onChange });
+    const el = panel.getElement();
+    const toggle = el.querySelector('#toggle-transparent-background') as HTMLInputElement;
+    const color = el.querySelector('#color-background') as HTMLInputElement;
+    expect(toggle.checked).toBe(DEFAULT_CONFIG.transparentBackground);
+    expect(color.disabled).toBe(DEFAULT_CONFIG.transparentBackground);
+    panel.setValues({ transparentBackground: false });
+    expect(toggle.checked).toBe(false);
+    expect(color.disabled).toBe(false);
+  });
+
   it('setValues() で値が更新されること', () => {
     const panel = new SettingsPanel({ onChange });
     panel.setValues({ threshold: 0.3 });

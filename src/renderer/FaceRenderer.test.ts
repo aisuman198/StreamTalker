@@ -213,6 +213,7 @@ describe('FaceRenderer', () => {
   describe('setBackgroundColor()', () => {
     it('デフォルトの背景色が #00FF00 であり draw() で fillRect が呼ばれること', async () => {
       const { canvas, renderer } = makeRenderer();
+      renderer.setTransparentBackground(false);
       await renderer.setImageConfig(makeConfig());
       await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -230,6 +231,7 @@ describe('FaceRenderer', () => {
 
     it('setBackgroundColor() で色を変更すると fillStyle に反映されること', async () => {
       const { canvas, renderer } = makeRenderer();
+      renderer.setTransparentBackground(false);
       await renderer.setImageConfig(makeConfig());
       await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -247,6 +249,7 @@ describe('FaceRenderer', () => {
 
     it('setBackgroundColor() を呼ぶと即座に再描画されること（fillRect が追加で呼ばれる）', async () => {
       const { canvas, renderer } = makeRenderer();
+      renderer.setTransparentBackground(false);
       await renderer.setImageConfig(makeConfig());
       await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -262,12 +265,46 @@ describe('FaceRenderer', () => {
     });
   });
 
+  describe('setTransparentBackground()', () => {
+    it('true のとき clearRect のみで fillRect が呼ばれないこと', async () => {
+      const { canvas, renderer } = makeRenderer();
+      await renderer.setImageConfig(makeConfig());
+      await new Promise(resolve => setTimeout(resolve, 10));
+      renderer.setTransparentBackground(true);
+      const ctx = canvas.getContext('2d') as {
+        clearRect: ReturnType<typeof vi.fn>;
+        fillRect: ReturnType<typeof vi.fn>;
+      };
+      ctx.clearRect.mockClear();
+      ctx.fillRect.mockClear();
+      renderer.updateState({ mouth: 'open', eye: 'open' });
+      expect(ctx.clearRect).toHaveBeenCalled();
+      expect(ctx.fillRect).not.toHaveBeenCalled();
+    });
+
+    it('false のとき backgroundColor で fillRect されること', async () => {
+      const { canvas, renderer } = makeRenderer();
+      await renderer.setImageConfig(makeConfig());
+      await new Promise(resolve => setTimeout(resolve, 10));
+      const ctx = canvas.getContext('2d') as {
+        fillRect: ReturnType<typeof vi.fn>;
+        fillStyle: string;
+      };
+      renderer.updateState({ mouth: 'closed', eye: 'open' });
+      renderer.setBackgroundColor('#123456');
+      renderer.setTransparentBackground(false);
+      expect(ctx.fillRect).toHaveBeenCalled();
+      expect(ctx.fillStyle).toBe('#123456');
+    });
+  });
+
   // ----------------------------------------------------------------
   // 6. showError() のテスト
   // ----------------------------------------------------------------
   describe('showError()', () => {
     it('fillText でエラーメッセージが描画されること', () => {
       const { canvas, renderer } = makeRenderer();
+      renderer.setTransparentBackground(false);
       const ctx = canvas.getContext('2d') as {
         clearRect: ReturnType<typeof vi.fn>;
         fillRect: ReturnType<typeof vi.fn>;

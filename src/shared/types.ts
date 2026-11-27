@@ -35,6 +35,7 @@ export interface AppConfig {
   smoothingTimeConstant: number;   // 音量平滑化係数
   pollingInterval: number;         // AnalyserNode読み取り間隔 (ms)
   lipSyncCycleMs: number;          // リップシンク1ステップの時間 (ms)
+  transparentBackground: boolean;  // 背景を透明にする（OBSでクロマキー不要）
   backgroundColor: string;         // Canvas 背景色（OBS クロマキー用）
   blinkIntervalBase: number;       // 瞬き間隔の基準値 (ms)
   blinkIntervalVariance: number;   // 瞬き間隔のばらつき (ms)
