@@ -6,6 +6,7 @@ export const DEFAULT_CONFIG: Omit<AppConfig, 'images'> = {
   smoothingTimeConstant: 0.3,
   pollingInterval: 50,
   lipSyncCycleMs: 150,
+  transparentBackground: true,
   backgroundColor: '#00FF00',
   blinkIntervalBase: 4000,
   blinkIntervalVariance: 2000,

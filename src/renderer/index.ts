@@ -31,6 +31,7 @@ async function applyRendererConfig(renderer: FaceRenderer, newConfig: AppConfig)
       console.warn('[StreamTalker] 画像の再プリロードに失敗しました。', err);
     }
   }
+  renderer.setTransparentBackground(newConfig.transparentBackground ?? DEFAULT_CONFIG.transparentBackground);
   renderer.setBackgroundColor(newConfig.backgroundColor ?? DEFAULT_CONFIG.backgroundColor);
   renderer.setSway(
     newConfig.swayAmplitudePercent ?? DEFAULT_CONFIG.swayAmplitudePercent,

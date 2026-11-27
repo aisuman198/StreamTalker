@@ -29,6 +29,7 @@ export class FaceRenderer {
   private imageConfig: ImageConfig | null = null;
   private animFrameId: number | null = null;
   private backgroundColor: string = DEFAULT_CONFIG.backgroundColor;
+  private transparentBackground: boolean = DEFAULT_CONFIG.transparentBackground;
   private debugInfo: DebugInfo | null = null;
   private swayAmplitudePercent: number = DEFAULT_CONFIG.swayAmplitudePercent;
   private swayPeriodMs: number = DEFAULT_CONFIG.swayPeriodMs;
@@ -99,6 +100,12 @@ export class FaceRenderer {
     this.draw();
   }
 
+  // 背景透明モードを設定して即座に再描画
+  setTransparentBackground(v: boolean): void {
+    this.transparentBackground = v;
+    this.draw();
+  }
+
   // 上下揺れの振れ幅（Canvas の高さに対する %）と 1 往復の時間 (ms) を設定
   setSway(amplitudePercent: number, periodMs: number): void {
     this.swayAmplitudePercent = amplitudePercent;
@@ -107,6 +114,7 @@ export class FaceRenderer {
 
   private clearCanvas(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.transparentBackground) return;
     this.ctx.fillStyle = this.backgroundColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }

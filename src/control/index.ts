@@ -73,6 +73,7 @@ function mountComponents(initialConfig: AppConfig): void {
       swayPeriodMs: initialConfig.swayPeriodMs,
     },
     initialBackgroundColor: initialConfig.backgroundColor,
+    initialTransparentBackground: initialConfig.transparentBackground,
     onChange: (values) => {
       currentConfig.threshold = values.threshold;
       currentConfig.smoothingTimeConstant = values.smoothingTimeConstant;
@@ -80,6 +81,9 @@ function mountComponents(initialConfig: AppConfig): void {
       currentConfig.blinkIntervalBase = values.blinkIntervalBase;
       currentConfig.swayAmplitudePercent = values.swayAmplitudePercent;
       currentConfig.swayPeriodMs = values.swayPeriodMs;
+    },
+    onTransparentBackgroundChange: (transparent) => {
+      currentConfig.transparentBackground = transparent;
     },
     onBackgroundColorChange: (color) => {
       currentConfig.backgroundColor = color;
@@ -164,6 +168,7 @@ async function main(): Promise<void> {
         swayAmplitudePercent: updatedConfig.swayAmplitudePercent,
         swayPeriodMs: updatedConfig.swayPeriodMs,
         backgroundColor: updatedConfig.backgroundColor,
+        transparentBackground: updatedConfig.transparentBackground,
       });
     }
   });
